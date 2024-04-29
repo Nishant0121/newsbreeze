@@ -1,108 +1,89 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-export default function Home() {
-  const [news, setNews] = useState([]);
-  const [category, setCategory] = useState("sports"); // Default category
-  const [country, setCountry] = useState("in"); // Default country
-  const [loading, setLoading] = useState(true); // Loading state
+const MyComponent = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const apiKey = "pub_42060405b97206b12a5028dc1a3d91d91e339"; // Replace "YOUR_API_KEY" with your actual API key
 
   useEffect(() => {
-    const fetchNews = async () => {
+    const fetchData = async () => {
       try {
-        setLoading(true); // Set loading state to true before fetching news
-        const api = "423c372d505f45fb8b9f38426610d367";
         const response = await fetch(
-          `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${api}`
+          `https://newsdata.io/api/1/news?apikey=${apiKey}&q=pizza`
         );
         if (!response.ok) {
-          throw new Error("Failed to fetch news");
+          throw new Error("Network response was not ok");
         }
-        const data = await response.json();
-        setNews(data.articles);
-        console.log(data.articles);
+        const jsonData = await response.json();
+        setData(jsonData.results);
       } catch (error) {
-        console.error("Error fetching news:", error);
+        setError(error);
       } finally {
-        setLoading(false); // Set loading state to false after fetching news
+        setLoading(false);
       }
     };
 
-    fetchNews();
-  }, [category, country]);
+    fetchData();
+  }, [apiKey]);
+  console.log(data);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
-    <div>
-      <h1>News App</h1>
-      <div>
-        <label htmlFor="category">Category:</label>
-        <select
-          id="category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option value="sports">Sports</option>
-          <option value="business">Business</option>
-          {/* Add more options as needed */}
-        </select>
-      </div>
-      <div>
-        <label htmlFor="country">Country:</label>
-        <select
-          id="country"
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
-        >
-          <option value="in">India</option>
-          <option value="us">United States</option>
-          {/* Add more options as needed */}
-        </select>
-      </div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="m-2 p-2">
-          <div className="grid gap-3 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1">
-            {news.map((article, index) => (
-              <article
-                key={index}
-                className="overflow-hidden rounded-lg shadow transition hover:shadow-lg"
+    <div className="m-2">
+      helo
+      <h1>Data fetched from API:</h1>
+      <div className=" grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-3">
+        {data.map((item, index) => (
+          <div class="max-w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <a href="/">
+              <img class="rounded-t-lg" src={item.image_url} alt="" />
+            </a>
+            <div class="p-5">
+              <a href="/">
+                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  Noteworthy technology acquisitions 2021
+                </h5>
+              </a>
+              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                Here are the biggest enterprise technology acquisitions of 2021
+                so far, in reverse chronological order.
+              </p>
+              <a
+                href="/"
+                class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                <img
-                  alt="Not Found"
-                  src={article.urlToImage}
-                  className="h-56 w-full object-cover"
-                />
-                <div className="bg-white p-4 sm:p-6">
-                  <time
-                    dateTime="2022-10-10"
-                    className="block text-xs text-gray-500"
-                  >
-                    {article.publishedAt}
-                  </time>
-                  <h3 className="mt-0.5 text-lg text-gray-900">
-                    {article.title}
-                  </h3>
-                  <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-500">
-                    {article.description}
-                  </p>
-                  <a
-                    href={article.url}
-                    className="group mt-4 inline-flex items-center gap-1 text-sm font-medium text-blue-600"
-                  >
-                    Find out more
-                    <span
-                      aria-hidden="true"
-                      className="block transition-all group-hover:ms-0.5 rtl:rotate-180"
-                    >
-                      &rarr;
-                    </span>
-                  </a>
-                </div>
-              </article>
-            ))}
+                Read more
+                <svg
+                  class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 14 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M1 5h12m0 0L9 1m4 4L9 9"
+                  />
+                </svg>
+              </a>
+            </div>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   );
-}
+};
+
+export default MyComponent;
